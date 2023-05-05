@@ -20,6 +20,4 @@ export const columnData = [
       title: "✔️ Completed",
       tasks: []
     }
-  ]
-
-  
+  ] 
