@@ -1,22 +1,22 @@
-import React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import Login from "../login";
+import { MemoryRouter } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 
-describe("Test the login component", () => {
-  test("check if login component renders correctly by checking if form title is displayed in the screen", () => {
-    render(<Login />);
-    const linkElement = screen.getByText(/Sign in to continue/i);
-    expect(linkElement).toBeInTheDocument();
-  });
 
-  test("check if the email and password fields are displayed", () => {
-    const loginComponent = render(<Login />);
-    const childElementEmail = loginComponent.getByPlaceholderText("Email");
-    const childElementPassword =
-      loginComponent.getAllByPlaceholderText("Password");
-    expect(childElementEmail).toBeTruthy();
-    expect(childElementPassword).toBeTruthy();
+describe("Test the login component", () => {
+
+  test("check if the login component renders correctly", () => {
+    render(<Login />)
+    const title = screen.getByText("Sign in to continue");
+    const emailInput = screen.getByPlaceholderText("Email");
+    const passwordInput = screen.getByPlaceholderText("Password");
+    const loginButton = screen.getByRole("button", { name: "Log in" });
+
+    expect(title).toBeInTheDocument();
+    expect(emailInput).toBeInTheDocument();
+    expect(passwordInput).toBeInTheDocument();
+    expect(loginButton).toBeInTheDocument();
   });
 
   test("check if the password input is defined as type password or not", () => {
@@ -47,10 +47,10 @@ describe("Test the login component", () => {
   test("displays email is required error for empty email input submission", async () => {
     render(<Login />);
 
-    const emailInput = screen.getByPlaceholderText("Email");
+    const passwordInput = screen.getByPlaceholderText("Password");
 
     const loginButton = screen.getByRole("button", { name: "Log in" });
-    userEvent.type(emailInput, "");
+    userEvent.type(passwordInput, "1122")
     userEvent.click(loginButton);
 
     await waitFor(() => {
@@ -77,14 +77,41 @@ describe("Test the login component", () => {
   test("displays password is required error for empty password input submission", async () => {
     render(<Login />);
 
-    const passwordInput = screen.getByPlaceholderText("Password");
+    const emailInput = screen.getByPlaceholderText("Email");
     const loginButton = screen.getByRole("button", { name: "Log in" });
-    userEvent.type(passwordInput, "");
+    userEvent.type(emailInput, "yuvaraj@gmail.com");
     userEvent.click(loginButton);
 
     await waitFor(() => {
       const passwordError = screen.getByTestId("password-error");
       expect(passwordError).toHaveTextContent("Password is required");
     });
+  });
+
+  test("should display validation error if email and password is empty", async () => {
+    const { getByText } = render(<Login />);
+    const loginButton = getByText("Log in");
+
+    fireEvent.click(loginButton);
+
+    await waitFor(() => {
+      const emailError = screen.queryByTestId("email-error");
+      const passwordError = screen.queryByTestId("password-error");
+
+      expect(emailError).toHaveTextContent("Email is required");
+      expect(passwordError).toHaveTextContent("Password is required");
+    });
+  });
+
+  test("typing in email and password input fields", () => {
+    render(<Login />, { wrapper: MemoryRouter });
+    const emailInput = screen.getByPlaceholderText("Email");
+    const passwordInput = screen.getByPlaceholderText("Password");
+
+    fireEvent.change(emailInput, { target: { value: "yuvaraj@gmail.com" } });
+    fireEvent.change(passwordInput, { target: { value: "1122" } });
+
+    expect(emailInput).toHaveValue("yuvaraj@gmail.com");
+    expect(passwordInput).toHaveValue("1122");
   });
 });
