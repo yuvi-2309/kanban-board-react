@@ -2,11 +2,11 @@ import styled from "styled-components";
 
 export const KanbanContainer = styled.div`
   display: flex;
-  /* align-items: flex-start; */
+  align-items: flex-start;
   margin-top: 3.75rem;
   margin-left: 1.875rem;
 
-  @media (max-width: 400px){
+  @media (max-width: 400px) {
     flex-wrap: wrap;
   }
 `;

@@ -1,5 +1,3 @@
-import React from "react";
-
 import { Head, NavContainer, NavLogo } from "./header.style";
 
 function Header() {

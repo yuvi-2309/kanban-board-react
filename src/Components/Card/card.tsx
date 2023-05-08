@@ -10,7 +10,17 @@ import {
 import { Chip, Stack, Menu, MenuItem, IconButton } from "@mui/material";
 import DehazeIcon from "@mui/icons-material/Dehaze";
 
-function Card  ({
+interface Props {
+  id: number;
+  name: string;
+  description?: string;
+  date?: string;
+  priority?: string;
+  onEditTask: (id: number) => void;
+  onDeleteTask: (id: number) => void;
+}
+
+function Card({
   id,
   name,
   description,
@@ -18,13 +28,13 @@ function Card  ({
   priority,
   onEditTask,
   onDeleteTask,
-}) {
+}: Props) {
   /* This state variable is used to control the opening and closing of a
   menu component in the card. */
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   // The handleClick function sets the anchor element to the current target of the event.
-  const handleClick = (event) => {
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -52,7 +62,7 @@ function Card  ({
   };
 
   // converted nested ternary operator of color into a statement for code readability
-  let color;
+  let color: "success" | "warning" | "error" | undefined;
   if (priority === "Low") {
     color = "success";
   } else if (priority === "Medium") {
@@ -62,7 +72,7 @@ function Card  ({
   }
 
   // Function for converting the date of format mm/dd/yyyy to Month date format
-  const formatDate = (dateString) => {
+  const formatDate = (dateString: string) => {
     const months = [
       "January",
       "February",
@@ -86,7 +96,7 @@ function Card  ({
   };
 
   // The date is passed as a parameter to the formatDate function to display it in the card/task
-  const formattedDate = formatDate(date);
+  const formattedDate = date ? formatDate(date) : "";
 
   return (
     <CardContainer>
@@ -114,25 +124,24 @@ function Card  ({
 
       {description && <CardDescription>{description}</CardDescription>}
 
-      <FlexWrap $primary>
+      <FlexWrap>
         {priority && (
           <CardPriority>
             <Stack spacing={1} alignItems="center">
               <Stack direction="row" spacing={1}>
-                <Chip label={priority} color={color} />
+                <Chip
+                  label={priority}
+                  data-testid="card-priority-chip"
+                  color={color}
+                />
               </Stack>
             </Stack>
           </CardPriority>
         )}
-        {date && (
-          <CardDate>
-            {formattedDate}
-            {/* <Chip label={date} /> */}
-          </CardDate>
-        )}
+        {date && <CardDate>{formattedDate}</CardDate>}
       </FlexWrap>
     </CardContainer>
   );
-};
+}
 
 export default Card;

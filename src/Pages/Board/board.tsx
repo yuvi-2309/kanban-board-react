@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -14,7 +14,7 @@ import {
   FormControl,
   Select,
 } from "@mui/material";
-import AddCircleIcon from '@mui/icons-material/AddCircle';
+import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { Modal } from "antd";
 
 import { Header, Card } from "../../Components";
@@ -28,10 +28,17 @@ import {
 import { FlexColumn } from "../../globalStyles";
 import { columnData } from "../../Data/columnData";
 
+interface Task {
+  id: string;
+  description?: string;
+  title: string;
+  date?: string;
+  priority?: string;
+}
 
 function Board() {
   // useState for storing the data of the tasks and columns
-  const [data, setData] = useState(columnData);
+  const [data, setData] = useState<any>(columnData);
 
   // useEffect to get the item from the localStorage and set the data to the state
   useEffect(() => {
@@ -45,7 +52,7 @@ function Board() {
   const [toEdit, setToEdit] = useState(null);
 
   // useState to add new task or edit the existing task
-  const [newTask, setNewTask] = useState({
+  const [newTask, setNewTask] = useState<Task>({
     id: uuidv4(),
     description: "",
     title: "",
@@ -62,13 +69,15 @@ function Board() {
   dragged item is moved between different columns, the function updates the `tasks` arrays of both
   the source and destination columns in the `data` array. Finally, the function updates the
   `localStorage` with the new `data` array. */
-  const onDragEnd = (result) => {
-    // to prevent error message when the draggable item is dropped outside drag and drop context 
+  const onDragEnd = (result: any) => {
+    // to prevent error message when the draggable item is dropped outside drag and drop context
     if (!result.destination) return;
     const { source, destination } = result;
-    
+
     if (source.droppableId === destination.droppableId) {
-      const columnIndex = data.findIndex((e) => e.id === source.droppableId);
+      const columnIndex = data.findIndex(
+        (e: any) => e.id === source.droppableId
+      );
       const column = data[columnIndex];
       const newTaskIds = Array.from(column.tasks);
       const [removed] = newTaskIds.splice(source.index, 1);
@@ -83,9 +92,11 @@ function Board() {
       const dataString = JSON.stringify(newData);
       localStorage.setItem("kanbanData", dataString);
     } else {
-      const sourceColIndex = data.findIndex((e) => e.id === source.droppableId);
+      const sourceColIndex = data.findIndex(
+        (e: any) => e.id === source.droppableId
+      );
       const destinationColIndex = data.findIndex(
-        (e) => e.id === destination.droppableId
+        (e: any) => e.id === destination.droppableId
       );
       const sourceCol = data[sourceColIndex];
       const destinationCol = data[destinationColIndex];
@@ -111,25 +122,25 @@ function Board() {
    * storage accordingly.
    */
 
-  const [dialogError, setDialogError] = useState();
+  const [dialogError, setDialogError] = useState("");
   const handleAddTask = () => {
     setOpen(true);
     if (newTask.title !== "") {
-      setDialogError("")
+      setDialogError("");
       if (toEdit === null) {
         data[0].tasks.push(newTask);
         setOpen(false);
         const dataString = JSON.stringify(data);
         localStorage.setItem("kanbanData", dataString);
       } else {
-        const itemToUpdate = data.find((item) =>
-          item.tasks.find((task) => task.id === toEdit)
+        const itemToUpdate = data.find((item: any) =>
+          item.tasks.find((task: any) => task.id === toEdit)
         );
-        const newData = data.map((item) => {
+        const newData = data.map((item: any) => {
           if (item.id === itemToUpdate.id) {
             return {
               ...item,
-              tasks: item.tasks.map((task) => {
+              tasks: item.tasks.map((task: any) => {
                 if (task.id === toEdit) {
                   return newTask;
                 }
@@ -139,15 +150,14 @@ function Board() {
           }
           return item;
         });
-        setData(newData)
+        setData(newData);
         const dataString = JSON.stringify(newData);
         localStorage.setItem("kanbanData", dataString);
         setOpen(false);
         setToEdit(null);
-        
       }
     } else {
-      setDialogError("error")
+      setDialogError("error");
     }
     setNewTask({
       id: uuidv4(),
@@ -157,7 +167,7 @@ function Board() {
   };
 
   // function to get the data from the input fields of the dialogue box
-  function handleAddInputTask(event) {
+  function handleAddInputTask(event: any) {
     const { name, value } = event.target;
     setNewTask((prevTask) => ({
       ...prevTask,
@@ -166,27 +176,29 @@ function Board() {
   }
 
   // callBack function to set the id of the task which is to be edited to the toEdit state
-  const handleEditTask = (id) => {
+  const handleEditTask = (id: any) => {
     setOpen(true);
     setToEdit(id);
-    const itemToUpdate = data.find((item) =>
-      item.tasks.find((task) => task.id === id)
+    const itemToUpdate = data.find((item: any) =>
+      item.tasks.find((task: any) => task.id === id)
     );
     if (itemToUpdate) {
-      const taskToUpdate = itemToUpdate.tasks.find((task) => task.id === id);
+      const taskToUpdate = itemToUpdate.tasks.find(
+        (task: any) => task.id === id
+      );
       setNewTask(taskToUpdate);
     }
   };
 
   // function to delete the existing task by using the id of that particular task
-  const handleDeleteTask = (id) => {
+  const handleDeleteTask = (id: any) => {
     Modal.confirm({
       title: "Are you sure, you want to delete this record?",
       okText: "Yes",
       okType: "danger",
       onOk: () => {
-        const newData = data.map((item) => {
-          const updatedTasks = item.tasks.filter((task) => task.id !== id);
+        const newData = data.map((item: any) => {
+          const updatedTasks = item.tasks.filter((task: any) => task.id !== id);
           return { ...item, tasks: updatedTasks };
         });
         setData(newData);
@@ -205,7 +217,11 @@ function Board() {
     <>
       <Header />
       <ButtonContainer>
-        <Button variant="outlined" onClick={() => setOpen(true)} startIcon={<AddCircleIcon />}>
+        <Button
+          variant="outlined"
+          onClick={() => setOpen(true)}
+          startIcon={<AddCircleIcon />}
+        >
           Add Task
         </Button>
         <Dialog
@@ -220,6 +236,7 @@ function Board() {
             });
             setDialogError("");
           }}
+          data-testid="dialog"
         >
           <DialogTitle>Add new task</DialogTitle>
           <DialogContent>
@@ -235,8 +252,8 @@ function Board() {
                 id="outlined-error"
                 value={newTask.title || ""}
                 onChange={(event) => handleAddInputTask(event)}
-                {...(dialogError && {error:true})}
-                helperText= {dialogError ? "Title is required" : ""}
+                {...(dialogError && { error: true })}
+                helperText={dialogError ? "Title is required" : ""}
               />
 
               <TextField
@@ -291,7 +308,7 @@ function Board() {
       </ButtonContainer>
       <DragDropContext onDragEnd={onDragEnd}>
         <KanbanContainer>
-          {data.map((section) => (
+          {data.map((section: any) => (
             <Droppable key={section.id} droppableId={section.id}>
               {(provided) => (
                 <KanbanColumn
@@ -300,7 +317,7 @@ function Board() {
                 >
                   <KanbanColumnTitle>{section.title}</KanbanColumnTitle>
                   <KanbanColumnContent>
-                    {section.tasks.map((task, index) => (
+                    {section.tasks.map((task: any, index: number) => (
                       <Draggable
                         key={task.id}
                         draggableId={task.id}

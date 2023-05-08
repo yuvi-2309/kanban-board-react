@@ -28,9 +28,9 @@ export const NavLogo = styled(Link)`
   cursor: pointer;
   text-decoration: none;
   color: black;
-  margin-left: 3px;
+  margin-left: 0.1875rem;
 
-  @media(max-width: 400px){
-    margin-left: 25px;
+  @media (max-width: 400px) {
+    margin-left: 1.5625rem;
   }
 `;
