@@ -23,7 +23,7 @@ describe("Card Component", () => {
 
   test("renders the task description", () => {
     const { getByText } = render(<Card {...mockProps} />);
-    const taskDescription = getByText(mockProps.description!);
+    const taskDescription = getByText(mockProps.description);
     expect(taskDescription).toBeInTheDocument();
   });
 
@@ -35,7 +35,7 @@ describe("Card Component", () => {
 
   test("renders the task priority", () => {
     const { getByText } = render(<Card {...mockProps} />);
-    const taskPriority = getByText(mockProps.priority!);
+    const taskPriority = getByText(mockProps.priority);
     expect(taskPriority).toBeInTheDocument();
   });
 
